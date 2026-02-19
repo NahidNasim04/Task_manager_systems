@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 export const Edit = () => {
   const navigate = useNavigate();
 
+  const API = import.meta.env.VITE_API_URL;
+
   const [id, setId] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -15,7 +17,7 @@ export const Edit = () => {
   const handleUpdate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     axios
-      .put(`https://698ec424aded595c2532b6b0.mockapi.io/task/${id}`, {
+      .put(`${API}/${id}`, {
         title,
         description,
         priority,

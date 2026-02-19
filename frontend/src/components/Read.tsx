@@ -14,11 +14,14 @@ interface DataItem {
 
 export const Read = () => {
   const [apiData, setApiData] = useState<DataItem[]>([]);
+
+  const API = import.meta.env.VITE_API_URL;
+
  const navigate = useNavigate();
 
   function getData() {
     axios
-      .get("https://698ec424aded595c2532b6b0.mockapi.io/task")
+      .get(API)
 
       .then((res) => {
         setApiData(res.data);
@@ -29,7 +32,7 @@ export const Read = () => {
   }
   function handleDelete(id: number | string) {
     axios
-      .delete(`https://698ec424aded595c2532b6b0.mockapi.io/task/${id}`)
+      .delete(`${API}/${id}`)
       .then(() => {
         getData();
       })
@@ -65,6 +68,7 @@ export const Read = () => {
       </div>
       <Link to="/create">
         <button>Create</button>
+      </Link>
         <div>
           <div>
             <table>
@@ -128,7 +132,7 @@ export const Read = () => {
             </table>
           </div>
         </div>
-      </Link>
+      
     </>
   );
 };
