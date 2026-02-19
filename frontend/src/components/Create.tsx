@@ -25,10 +25,13 @@ export const Create = () => {
 
   const navigate = useNavigate();
 
+
+  const API = import.meta.env.VITE_API_URL;
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>)=> {
     e.preventDefault();
     axios
-      .post("https://698ec424aded595c2532b6b0.mockapi.io/task", {
+      .post(API,{
         title,
         description,
         priority,
