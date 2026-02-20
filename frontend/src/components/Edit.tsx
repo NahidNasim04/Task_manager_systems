@@ -1,18 +1,56 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { format } from "date-fns";
+import { TypographyH2 } from "./ui/TypographyH2";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Calendar } from "@/components/ui/calendar";
 
 export const Edit = () => {
   const navigate = useNavigate();
 
   const API = import.meta.env.VITE_API_URL;
 
-  const [id, setId] = useState("");
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [priority, setPriority] = useState("");
-  const [mark, setMark] = useState("Completed");
-  const [deadline, setDeadline] = useState("");
+  const [id, SetId] = useState("");
+  const [title, SetTitle] = useState("");
+  const [description, SetDescription] = useState("");
+  const [priority, SetPriority] = useState("");
+  const [mark, SetMark] = useState("Completed");
+  const [deadline, SetDeadline] = useState("");
 
   const handleUpdate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -25,7 +63,6 @@ export const Edit = () => {
         deadline,
       })
       .then(() => {
-        alert("Data updated successfully");
         navigate("/");
       })
       .catch((err) => {
@@ -34,65 +71,133 @@ export const Edit = () => {
   };
 
   useEffect(() => {
-    setId(localStorage.getItem("id") ?? "");
-    setTitle(localStorage.getItem("title") ?? "");
-    setDescription(localStorage.getItem("description") ?? "");
-    setPriority(localStorage.getItem("priority") ?? "");
-    setMark(localStorage.getItem("mark") ?? "");
-    setDeadline(localStorage.getItem("deadline") ?? "");
+    SetId(localStorage.getItem("id") ?? "");
+    SetTitle(localStorage.getItem("title") ?? "");
+    SetDescription(localStorage.getItem("description") ?? "");
+    SetPriority(localStorage.getItem("priority") ?? "");
+    SetMark(localStorage.getItem("mark") ?? "");
+    SetDeadline(localStorage.getItem("deadline") ?? "");
   }, []);
 //input section
   return (
     <>
-      <div>
-        <h1>Update Task Manager</h1>
+      <div className="text-center">
+        <TypographyH2>Update Task Manager</TypographyH2>
+      </div>
+      <div className="flex items-center justify-center min-h-screen bg-muted/40 p-2">
+      <Card className="w-full max-w-md shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-center text-xl font-semibold">
+              Update Task
+            </CardTitle>
+          </CardHeader>
         <form onSubmit={handleUpdate}>
-          <div>
-            <label htmlFor="title">Title</label>
-            <input
+          <CardContent className="space-y-2">
+          <div className="grid gap-2">
+            <Label htmlFor="title">Title</Label>
+            <Input
               type="text"
               value={title}
               placeholder="Title name"
-              onChange={(e) => setTitle(e.target.value)}
-            ></input>
+              onChange={(e) => SetTitle(e.target.value)}
+            />
           </div>
-          <div>
-            <label htmlFor="description">Description</label>
-            <input
+          <div className="grid gap-2">
+            <Label htmlFor="description">Description</Label>
+            <Input
               type="text"
               value={description}
               placeholder="Description"
-              onChange={(e) => setDescription(e.target.value)}
-            ></input>
+              onChange={(e) => SetDescription(e.target.value)}
+            />
           </div>
           <div>
-            <label htmlFor="priority">Priority</label>
-            <input
+            <Label htmlFor="priority">Priority</Label>
+            <Input
               type="text"
               value={priority}
               placeholder="Priority"
-              onChange={(e) => setPriority(e.target.value)}
-            ></input>
+              onChange={(e) => SetPriority(e.target.value)}
+            />
           </div>
-          <div>
-            <label htmlFor="title">Mark as complited</label>
-            <select value={mark} onChange={(e) => setMark(e.target.value)}>
-              <option value="completed">Completed</option>
-              <option value="pending">Pending</option>
-              <option value="on going">On going</option>
-            </select>
+          <div className="grid gap-2">
+            <Label htmlFor="mark">Mark as Project</Label>
+                <Select value={mark} onValueChange={(value) => SetMark(value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="completed">Completed</SelectItem>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="on going">On Going</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
           </div>
-          <div>
-            <label htmlFor="deadline">Deadline</label>
-            <input
-              type="date"
-              value={deadline}
-              placeholder="Deadline date"
-              onChange={(e) => setDeadline(e.target.value)}
-            ></input>
-          </div>
-          <button type="submit">Update</button>
+          <div className="grid gap-2">
+            <Label htmlFor="deadline">Deadline</Label>
+            <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="justify-start text-left"
+                    >
+                      {deadline ? format(deadline, "PPP") : "Pick a date"}
+                    </Button>
+                  </PopoverTrigger>
+
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={deadline}
+                      onSelect={SetDeadline}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <CardFooter className="flex flex-col gap-2">
+                {/* <Button type="submit" className="w-full">
+                Submit
+              </Button>
+
+              <Button variant="outline" className="w-full">
+                <Link to={"/"}>Go to Read Sections</Link>
+              </Button> */}
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button className="w-full">Update</Button>
+                  </AlertDialogTrigger>
+
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Confirm Updation</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure you want to update this data?
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+
+                      <AlertDialogAction
+                        onClick={(e) => {
+                          handleUpdate(e as unknown as React.FormEvent);
+                        }}
+                      >
+                        Yes, Update
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+                <Button variant="outline" className="w-full">
+                  <Link to={"/"}>Go to Read Sections</Link>
+                </Button>
+              </CardFooter>
+          </CardContent>
         </form>
+        </Card>
       </div>
     </>
   );
