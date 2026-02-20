@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { TypographyH2 } from "./ui/TypographyH2";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,7 +27,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-//Here added .Env files 
+//Here added .Env files
 
 //type for data
 interface DataItem {
@@ -39,9 +42,10 @@ interface DataItem {
 export const Read = () => {
   const [apiData, setApiData] = useState<DataItem[]>([]);
 
-  const API = import.meta.env.VITE_API_URL;
+  const [searchInput, setSearchInput] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
- const navigate = useNavigate();
+  const API = import.meta.env.VITE_API_URL;
 
   function getData() {
     axios
@@ -85,21 +89,44 @@ export const Read = () => {
     localStorage.setItem("deadline", deadline);
   }
 
+  const handleSearch = () => {
+    setSearchTerm(searchInput);
+  };
+
+  const filteredData =
+    searchTerm.trim() === ""
+      ? apiData
+      : apiData.filter(
+          (item) => item.mark?.toLowerCase() === searchTerm.toLowerCase(),
+        );
+
   return (
     <>
-        <div className="text-center">
-                <TypographyH2>Create Task Manager</TypographyH2>
-              </div>
-      <Link to="/create">
-        <Button>Create</Button>
-      </Link>
+      <div className="text-center">
+        <TypographyH2>Read Task Manager</TypographyH2>
+      </div>
       <div>
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-2 max-w-md w-full">
-            
+            <div className="relative flex-1">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                className="pl-8"
+                type="text"
+                placeholder="Search by Mark as 'completed'..."
+                value={searchInput}
+                required
+                onChange={(e) => setSearchInput(e.target.value)}
+              />
+            </div>
+
+            <Button onClick={handleSearch}>Search</Button>
           </div>
+          <Link to="/create">
+            <Button>Create</Button>
+          </Link>
         </div>
-        <br/>
+        <br />
         <Table>
           <TableCaption>A list of your recent added data.</TableCaption>
           <TableHeader>
@@ -116,7 +143,7 @@ export const Read = () => {
           </TableHeader>
 
           <TableBody>
-            {apiData.map((data) => (
+            {filteredData.map((data) => (
               <TableRow key={data.id}>
                 <TableCell>{data.id}</TableCell>
                 <TableCell>{data.title}</TableCell>
