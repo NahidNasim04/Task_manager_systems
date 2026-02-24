@@ -42,7 +42,6 @@ import { Calendar } from "@/components/ui/calendar";
 
 export const Edit = () => {
   const navigate = useNavigate();
-
   const API = import.meta.env.VITE_API_URL;
 
   const [id, SetId] = useState("");
@@ -50,17 +49,18 @@ export const Edit = () => {
   const [description, SetDescription] = useState("");
   const [priority, SetPriority] = useState("");
   const [mark, SetMark] = useState("Completed");
-  const [date, SetDate] = useState("");
 
-  const handleUpdate = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  // ✅ FIXED TYPE (was string)
+  const [date, SetDate] = useState<Date | undefined>(undefined);
+
+  const handleUpdate = () => {
     axios
       .put(`${API}/${id}`, {
         title,
         description,
         priority,
         mark,
-        date,
+        date: date?.toISOString(),
       })
       .then(() => {
         navigate("/");
@@ -76,52 +76,62 @@ export const Edit = () => {
     SetDescription(localStorage.getItem("description") ?? "");
     SetPriority(localStorage.getItem("priority") ?? "");
     SetMark(localStorage.getItem("mark") ?? "");
-    SetDate(localStorage.getItem("date") ?? "");
+
+    // ✅ convert string → Date
+    const storedDate = localStorage.getItem("date");
+    SetDate(storedDate ? new Date(storedDate) : undefined);
   }, []);
-//input section
+
   return (
     <>
       <div className="text-center">
         <TypographyH2>Update Task Manager</TypographyH2>
       </div>
+
       <div className="flex items-center justify-center min-h-screen bg-muted/40 p-2">
-      <Card className="w-full max-w-md shadow-lg">
+        <Card className="w-full max-w-md shadow-lg">
           <CardHeader>
             <CardTitle className="text-center text-xl font-semibold">
               Update Task
             </CardTitle>
           </CardHeader>
-        <form onSubmit={handleUpdate}>
-          <CardContent className="space-y-2">
-          <div className="grid gap-2">
-            <Label htmlFor="title">Title</Label>
-            <Input
-              type="text"
-              value={title}
-              placeholder="Title name"
-              onChange={(e) => SetTitle(e.target.value)}
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="description">Description</Label>
-            <Input
-              type="text"
-              value={description}
-              placeholder="Description"
-              onChange={(e) => SetDescription(e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="priority">Priority</Label>
-            <Input
-              type="text"
-              value={priority}
-              placeholder="Priority"
-              onChange={(e) => SetPriority(e.target.value)}
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="mark">Mark as Project</Label>
+
+          {/* ✅ form kept SAME but submit removed */}
+          <form>
+            <CardContent className="space-y-2">
+
+              <div className="grid gap-2">
+                <Label htmlFor="title">Title</Label>
+                <Input
+                  type="text"
+                  value={title}
+                  placeholder="Title name"
+                  onChange={(e) => SetTitle(e.target.value)}
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="description">Description</Label>
+                <Input
+                  type="text"
+                  value={description}
+                  placeholder="Description"
+                  onChange={(e) => SetDescription(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="priority">Priority</Label>
+                <Input
+                  type="text"
+                  value={priority}
+                  placeholder="Priority"
+                  onChange={(e) => SetPriority(e.target.value)}
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="mark">Mark as Project</Label>
                 <Select value={mark} onValueChange={(value) => SetMark(value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select status" />
@@ -134,10 +144,11 @@ export const Edit = () => {
                     </SelectGroup>
                   </SelectContent>
                 </Select>
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="date">Date</Label>
-            <Popover>
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="date">Date</Label>
+                <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
@@ -151,20 +162,14 @@ export const Edit = () => {
                     <Calendar
                       mode="single"
                       selected={date}
-                      onSelect={SetDate}
+                      onSelect={(d) => SetDate(d)}
                       initialFocus
                     />
                   </PopoverContent>
                 </Popover>
               </div>
-              <CardFooter className="flex flex-col gap-2">
-                {/* <Button type="submit" className="w-full">
-                Submit
-              </Button>
 
-              <Button variant="outline" className="w-full">
-                <Link to={"/"}>Go to Read Sections</Link>
-              </Button> */}
+              <CardFooter className="flex flex-col gap-2">
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button className="w-full">Update</Button>
@@ -172,31 +177,35 @@ export const Edit = () => {
 
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Confirm Updation</AlertDialogTitle>
+                      <AlertDialogTitle>
+                        Confirm Updation
+                      </AlertDialogTitle>
                       <AlertDialogDescription>
                         Are you sure you want to update this data?
                       </AlertDialogDescription>
                     </AlertDialogHeader>
 
                     <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogCancel>
+                        Cancel
+                      </AlertDialogCancel>
 
-                      <AlertDialogAction
-                        onClick={(e) => {
-                          handleUpdate(e as unknown as React.FormEvent);
-                        }}
-                      >
+                      {/* ✅ SAFE CALL (NO FAKE EVENT) */}
+                      <AlertDialogAction onClick={handleUpdate}>
                         Yes, Update
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
+
                 <Button variant="outline" className="w-full">
                   <Link to={"/"}>Go to Read Sections</Link>
                 </Button>
               </CardFooter>
-          </CardContent>
-        </form>
+
+            </CardContent>
+          </form>
+
         </Card>
       </div>
     </>

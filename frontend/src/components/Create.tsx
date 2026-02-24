@@ -1,28 +1,18 @@
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
 import { TypographyH2 } from "./ui/TypographyH2";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+
 import {
   Select,
   SelectContent,
@@ -31,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
 import {
   Card,
   CardContent,
@@ -38,37 +29,32 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
 import { Calendar } from "@/components/ui/calendar";
 
 export const Create = () => {
-  const [title, SetTitle] = useState("");
-  const [description, SetDescription] = useState("");
-  const [priority, SetPriority] = useState("");
-  const [mark, SetMark] = useState("");
-  const [date, SetDate] = useState<Date | undefined>(undefined);
-
-
   const navigate = useNavigate();
+  const API = import.meta.env.VITE_API_URL;
 
-const API = import.meta.env.VITE_API_URL;
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [priority, setPriority] = useState("");
+  const [mark, setMark] = useState("");
+  const [date, setDate] = useState<Date | undefined>(undefined);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     axios
       .post(API, {
         title,
         description,
         priority,
         mark,
-        date,
+        date: date?.toISOString(),
       })
-      .then((res) => {
-        navigate("/");
-        console.log("res", res);
-      })
-      .catch((err) => {
-        console.log("error", err);
-      });
+      .then(() => navigate("/"))
+      .catch((err) => console.log(err));
   };
 
   return (
@@ -76,119 +62,97 @@ const API = import.meta.env.VITE_API_URL;
       <div className="text-center">
         <TypographyH2>Create Task Manager</TypographyH2>
       </div>
+
       <div className="flex items-center justify-center min-h-screen bg-muted/40 p-2">
-      <Card className="w-full max-w-md shadow-lg">
+        <Card className="w-full max-w-md shadow-lg">
           <CardHeader>
-            <CardTitle className="text-center text-xl font-semibold">
+            <CardTitle className="text-center">
               Create Task
             </CardTitle>
           </CardHeader>
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-2">
-          <div className="grid gap-2">
-            <Label htmlFor="title">Title</Label>
-            <Input
-              type="text"
-              value={title}
-              placeholder="Title name"
-              onChange={(e) => SetTitle(e.target.value)}
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="description">Description</Label>
-            <Input
-              type="text"
-              value={description}
-              placeholder="Description"
-              onChange={(e) => SetDescription(e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="priority">Priority</Label>
-            <Input
-              type="text"
-              value={priority}
-              placeholder="Priority"
-              onChange={(e) => SetPriority(e.target.value)}
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="mark">Mark as Project</Label>
-                <Select value={mark} onValueChange={(value) => SetMark(value)}>
+
+          <form onSubmit={handleSubmit}>
+            <CardContent className="space-y-3">
+
+              <div>
+                <Label>Title</Label>
+                <Input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Label>Description</Label>
+                <Input
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Label>Priority</Label>
+                <Input
+                  value={priority}
+                  onChange={(e) => setPriority(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Label>Status</Label>
+                <Select value={mark} onValueChange={setMark}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectItem value="completed">Completed</SelectItem>
-                      <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="on going">On Going</SelectItem>
+                      <SelectItem value="completed">
+                        Completed
+                      </SelectItem>
+                      <SelectItem value="pending">
+                        Pending
+                      </SelectItem>
+                      <SelectItem value="ongoing">
+                        On Going
+                      </SelectItem>
                     </SelectGroup>
                   </SelectContent>
                 </Select>
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="deadline">Deadline</Label>
-            <Popover>
+              </div>
+
+              <div>
+                <Label>Deadline</Label>
+                <Popover>
                   <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="justify-start text-left"
-                    >
+                    <Button variant="outline">
                       {date ? format(date, "PPP") : "Pick a date"}
                     </Button>
                   </PopoverTrigger>
 
-                  <PopoverContent className="w-auto p-0">
+                  <PopoverContent className="p-0">
                     <Calendar
                       mode="single"
                       selected={date}
-                       onSelect={(d) => SetDate(d)}
+                      onSelect={(d) => setDate(d)}
                       initialFocus
                     />
                   </PopoverContent>
                 </Popover>
               </div>
-              <CardFooter className="flex flex-col gap-2">
-                {/* <Button type="submit" className="w-full">
+
+            </CardContent>
+
+            <CardFooter className="flex flex-col gap-2">
+              <Button type="submit" className="w-full">
                 Submit
               </Button>
 
               <Button variant="outline" className="w-full">
-                <Link to={"/"}>Go to Read Sections</Link>
-              </Button> */}
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button className="w-full">Submit</Button>
-                  </AlertDialogTrigger>
+                <Link to="/">Go Back</Link>
+              </Button>
+            </CardFooter>
 
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Confirm Submission</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Are you sure you want to submit this data?
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-
-                      <AlertDialogAction
-                        onClick={(e) => {
-                          handleSubmit(e as unknown as React.FormEvent<HTMLFormElement>);
-                        }}
-                      >
-                        Yes, Submit
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-                <Button variant="outline" className="w-full">
-                  <Link to={"/"}>Go to Read Sections</Link>
-                </Button>
-              </CardFooter>
-          </CardContent>
-        </form>
+          </form>
         </Card>
       </div>
     </>
