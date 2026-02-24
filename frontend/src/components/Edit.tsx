@@ -50,7 +50,7 @@ export const Edit = () => {
   const [description, SetDescription] = useState("");
   const [priority, SetPriority] = useState("");
   const [mark, SetMark] = useState("Completed");
-  const [deadline, SetDeadline] = useState("");
+  const [date, SetDate] = useState("");
 
   const handleUpdate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -60,7 +60,7 @@ export const Edit = () => {
         description,
         priority,
         mark,
-        deadline,
+        date,
       })
       .then(() => {
         navigate("/");
@@ -76,7 +76,7 @@ export const Edit = () => {
     SetDescription(localStorage.getItem("description") ?? "");
     SetPriority(localStorage.getItem("priority") ?? "");
     SetMark(localStorage.getItem("mark") ?? "");
-    SetDeadline(localStorage.getItem("deadline") ?? "");
+    SetDate(localStorage.getItem("date") ?? "");
   }, []);
 //input section
   return (
@@ -136,22 +136,22 @@ export const Edit = () => {
                 </Select>
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="deadline">Deadline</Label>
+            <Label htmlFor="date">Date</Label>
             <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
                       className="justify-start text-left"
                     >
-                      {deadline ? format(deadline, "PPP") : "Pick a date"}
+                      {date ? format(date, "PPP") : "Pick a date"}
                     </Button>
                   </PopoverTrigger>
 
                   <PopoverContent className="w-auto p-0">
                     <Calendar
                       mode="single"
-                      selected={deadline}
-                      onSelect={SetDeadline}
+                      selected={date}
+                      onSelect={SetDate}
                       initialFocus
                     />
                   </PopoverContent>
