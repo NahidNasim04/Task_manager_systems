@@ -45,7 +45,7 @@ export const Create = () => {
   const [description, SetDescription] = useState("");
   const [priority, SetPriority] = useState("");
   const [mark, SetMark] = useState("");
-  const [date, setDate] = useState<Date | undefined>(undefined);
+  const [date, SetDate] = useState<Date | undefined>(undefined);
 
 
   const navigate = useNavigate();
@@ -143,7 +143,7 @@ const API = import.meta.env.VITE_API_URL;
                     <Calendar
                       mode="single"
                       selected={date}
-                      onSelect={SetDate}
+                       onSelect={(d) => SetDate(d)}
                       initialFocus
                     />
                   </PopoverContent>
@@ -175,7 +175,7 @@ const API = import.meta.env.VITE_API_URL;
 
                       <AlertDialogAction
                         onClick={(e) => {
-                          handleSubmit(e as unknown as React.FormEvent);
+                          handleSubmit(e as unknown as React.FormEvent<HTMLFormElement>);
                         }}
                       >
                         Yes, Submit
