@@ -36,7 +36,7 @@ interface DataItem {
   description: string;
   priority: string;
   mark: string;
-  deadline: string;
+  date: string;
 }
 
 export const Read = () => {
@@ -79,14 +79,14 @@ export const Read = () => {
     description: string,
     priority: string,
     mark: string,
-    deadline: string,
+    date: string,
   ) {
     localStorage.setItem("id", id.toString());
     localStorage.setItem("title", title);
     localStorage.setItem("description", description);
     localStorage.setItem("priority", priority);
     localStorage.setItem("mark", mark);
-    localStorage.setItem("deadline", deadline);
+    localStorage.setItem("date", date);
   }
 
   const handleSearch = () => {
@@ -136,7 +136,7 @@ export const Read = () => {
               <TableHead>Description</TableHead>
               <TableHead>Priority</TableHead>
               <TableHead>Mark as Completed</TableHead>
-              <TableHead>Deadline</TableHead>
+              <TableHead>Date</TableHead>
               <TableHead>Edit</TableHead>
               <TableHead>Delete</TableHead>
             </TableRow>
@@ -150,7 +150,7 @@ export const Read = () => {
                 <TableCell>{data.description}</TableCell>
                 <TableCell>{data.priority}</TableCell>
                 <TableCell>{data.mark}</TableCell>
-                <TableCell>{data.deadline}</TableCell>
+                <TableCell>{data.date}</TableCell>
 
                 <TableCell>
                   <Link to="/edit">
@@ -163,7 +163,7 @@ export const Read = () => {
                           data.description,
                           data.priority,
                           data.mark,
-                          data.deadline,
+                          data.date,
                         )
                       }
                     >

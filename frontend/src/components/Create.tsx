@@ -45,7 +45,7 @@ export const Create = () => {
   const [description, SetDescription] = useState("");
   const [priority, SetPriority] = useState("");
   const [mark, SetMark] = useState("");
-  const [deadline, SetDeadline] = useState<Date | undefined>();
+  const [date, setDate] = useState<Date | undefined>(undefined);
 
 
   const navigate = useNavigate();
@@ -60,7 +60,7 @@ const API = import.meta.env.VITE_API_URL;
         description,
         priority,
         mark,
-        deadline,
+        date,
       })
       .then((res) => {
         navigate("/");
@@ -135,15 +135,15 @@ const API = import.meta.env.VITE_API_URL;
                       variant="outline"
                       className="justify-start text-left"
                     >
-                      {deadline ? format(deadline, "PPP") : "Pick a date"}
+                      {date ? format(date, "PPP") : "Pick a date"}
                     </Button>
                   </PopoverTrigger>
 
                   <PopoverContent className="w-auto p-0">
                     <Calendar
                       mode="single"
-                      selected={deadline}
-                      onSelect={SetDeadline}
+                      selected={date}
+                      onSelect={SetDate}
                       initialFocus
                     />
                   </PopoverContent>
